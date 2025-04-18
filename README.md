@@ -1,50 +1,28 @@
-# Welcome to your YAMISA app 👋
+# Yamisa - Gestión de Inventarios y Ventas para PyMEs
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Yamisa es una aplicación híbrida diseñada para ayudar a las pequeñas y medianas empresas (PyMEs) en el sector de corte y confección a gestionar y analizar sus inventarios, ventas, y costos de producción. La app permite a los usuarios controlar la entrada y salida de materia prima, estimar el flujo de ventas y analizar las ganancias, pérdidas y el rendimiento general de su negocio.
 
-## Get started
+## Características
 
-1. Install dependencies
+- **Gestión de Inventario:** Lleva un control de la materia prima y productos terminados, facilitando el seguimiento de entradas y salidas.
+- **Análisis de Ventas:** Estima el flujo de ventas y analiza el comportamiento de las mismas en función de diversos parámetros.
+- **Costos de Producción:** Permite analizar los costos asociados con la producción y compararlos con las ganancias obtenidas.
+- **Alertas de Stock:** Recibe notificaciones sobre exceso de stock o escasez de productos.
+- **Interfaz de Usuario Intuitiva:** Una interfaz limpia y fácil de usar basada en Gluestack UI y React Native.
+- **Soporte para PyMEs:** Pensado para pequeñas y medianas empresas que necesiten gestionar inventarios y ventas sin complicaciones.
 
-   ```bash
-   npm install
-   ```
+## Requisitos
 
-2. Start the app
+- Node.js (v16 o superior)
+- Expo (para desarrollo en React Native)
+- Cuenta en Supabase (para almacenamiento y gestión de datos)
 
-   ```bash
-    npx expo start
-   ```
+## Instalación
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Clonar el repositorio
 
 ```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+git clone https://github.com/tu-usuario/yamisa.git
+cd yamisa
+npm install
+npm start

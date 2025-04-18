@@ -22,7 +22,7 @@ Yamisa es una aplicación híbrida diseñada para ayudar a las pequeñas y media
 ### Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/yamisa.git
+git clone https://github.com/rxssett11/yamisa.git
 cd yamisa
 npm install
 npm start

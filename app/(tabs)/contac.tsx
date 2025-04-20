@@ -17,7 +17,7 @@ const proveedores = [
 ];
 
 export default function TabTwoScreen() {
-  const colorScheme = useColorScheme();   
+  const colorScheme = useColorScheme();
   const textColor = colorScheme === 'dark' ? '#FFFFFF' : '#000000';
   const tableHeaderColor = colorScheme === 'dark' ? '#444' : '#DCDCDC';
   const backgroundColor = colorScheme === 'dark' ? '#1E3A5F' : '#31D490';
@@ -36,11 +36,11 @@ export default function TabTwoScreen() {
     phone: string;
     address: string;
   };
-  
+
   return (
     <ParallaxScrollView
-    headerBackgroundColor={{ light: '#31D490', dark: '#1E3A5F' }} 
-    headerImage={
+      headerBackgroundColor={{ light: '#31D490', dark: '#1E3A5F' }}
+      headerImage={
         <View style={styles.headerContainer}>
           <Image source={icon} style={styles.headerImage} resizeMode="contain" />
         </View>
@@ -52,7 +52,7 @@ export default function TabTwoScreen() {
       <ThemedText>Listado de proveedores de la tienda de abarrotes.</ThemedText>
       <ScrollView>
         <DataTable style={styles.container}>
-          <DataTable.Header style={[styles.tableHeader, { backgroundColor: tableHeaderColor }]}> 
+          <DataTable.Header style={[styles.tableHeader, { backgroundColor: tableHeaderColor }]}>
             <DataTable.Title textStyle={{ color: textColor }}>Proveedor</DataTable.Title>
             <DataTable.Title textStyle={{ color: textColor }}>Producto</DataTable.Title>
             <DataTable.Title textStyle={{ color: textColor }}>Acción</DataTable.Title>
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     justifyContent: 'space-between',
     width: '100%',
-  },   
+  },
   modalButton: {
     flex: 1,
     marginTop: 10,

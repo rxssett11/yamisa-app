@@ -3,15 +3,33 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 const icon = require('@/assets/images/logo_abarrotes.png');
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme(); // Detecta el esquema de color (light o dark)
+  const colorScheme = useColorScheme();
+
+  const [user, setUser] = useState ('');
+  
+  useEffect(() => {
+    const getNameUser = async () => {
+      const {data : { user}, error} = await supabase.auth.getUser();
+      if(error){
+        console.error('Error al obtener usuario', error.message);
+      }
+      else if (user){
+        setUser(user.user_metadata?.nombre || user.email);
+      }
+    };
+      getNameUser();
+  }, []);
+
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#31D490', dark: '#1E3A5F' }} // Mantén headerBackgroundColor
+      headerBackgroundColor={{ light: '#31D490', dark: '#1E3A5F' }} 
       headerImage={
         <View style={styles.headerContainer}>
           <Image
@@ -23,11 +41,11 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Bienvenid@</ThemedText>
+        <ThemedText type="title">Bienvenid@ { user } </ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Características de la empresa</ThemedText>
+        <ThemedText type="subtitle">Este es tu panorama de las ventas</ThemedText>
         <ThemedText>
           Descripción breve de la empresa a la que se le brinda el servicio.
         </ThemedText>

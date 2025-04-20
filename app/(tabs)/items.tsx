@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Modal, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Modal,
+  StyleSheet,
+  View,
+  TextInput,
+} from 'react-native';
 import { Card, Button, Text } from 'react-native-paper';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -22,7 +30,14 @@ const ItemsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
-  const schemeTheme = useColorScheme(); 
+  const [cantidadStock, setCantidadStock] = useState<string>('0');
+
+  const [razonModalVisible, setRazonModalVisible] = useState(false);
+  const [accionPendiente, setAccionPendiente] = useState<'disminuir' | 'eliminar' | null>(null);
+  const [razonCambio, setRazonCambio] = useState('');
+
+
+  const schemeTheme = useColorScheme();
   const isDark = schemeTheme === 'dark';
 
   const colors = {
@@ -64,13 +79,46 @@ const ItemsScreen = () => {
         .eq('id_product', id);
       if (error) throw error;
       fetchProductos();
+      setModalVisible(false);
+      setCantidadStock('0');
     } catch (error) {
       console.error('Error al actualizar stock:', error);
     }
   };
 
+
+  const registrarRazon = async (id_producto: number, razon: string, tipo: 'disminuir' | 'eliminar') => {
+    try {
+      const { error } = await supabase.from('registro_stock').insert([
+        {
+          id_product: id_producto,
+          razon_cambio: razon,
+          tipo_cambio: tipo,
+          fecha_cambio: new Date().toISOString(),
+        },
+      ]);
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error al registrar razón:', error);
+    }
+  };
+
+
+  const eliminarProducto = async (id: number) => {
+    try { 
+      const { error } = await supabase.from('productos_yamisa').delete().eq('id_product', id);
+      if (error) throw error;
+      setModalVisible(false);
+      fetchProductos();
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo eliminar el producto.');
+      console.error('Error al eliminar producto:', error);
+    }
+  };
+
   const showModal = (producto: Producto) => {
     setSelectedProduct(producto);
+    setCantidadStock('0');
     setModalVisible(true);
   };
 
@@ -106,13 +154,75 @@ const ItemsScreen = () => {
               <Text style={{ color: colors.text }}>Vendidos: {item.vendidos_product}</Text>
             </Card.Content>
             <Card.Actions>
-              <Button mode="contained" onPress={() => showModal(item)} style={{ backgroundColor: colors.primary }}>
+              <Button
+                mode="contained"
+                onPress={() => showModal(item)}
+                style={{ backgroundColor: colors.primary }}
+              >
                 Detalles
               </Button>
             </Card.Actions>
           </Card>
         ))}
       </View>
+
+      <Modal visible={razonModalVisible} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <View style={[styles.modalContent, { backgroundColor: colors.modalBackground }]}>
+            <Text style={[styles.modalTitle, { color: colors.modalText }]}>¿Cuál es la razón?</Text>
+            <TextInput
+              placeholder="Escribe la razón del cambio..."
+              value={razonCambio}
+              onChangeText={setRazonCambio}
+              style={{
+                backgroundColor: isDark ? '#2c2c2c' : '#f0f0f0',
+                color: colors.text,
+                padding: 10,
+                borderRadius: 8,
+                marginBottom: 15,
+              }}
+            />
+
+            <Button
+              mode="contained"
+              onPress={async () => {
+                if (!selectedProduct || !accionPendiente) return;
+
+                await registrarRazon(selectedProduct.id_product, razonCambio, accionPendiente);
+
+                if (accionPendiente === 'disminuir') {
+                  await actualizarStock(
+                    selectedProduct.id_product,
+                    -parseInt(cantidadStock || '0', 10)
+                  );
+                } else if (accionPendiente === 'eliminar') {
+                  await eliminarProducto(selectedProduct.id_product);
+                }
+
+                setRazonCambio('');
+                setAccionPendiente(null);
+                setRazonModalVisible(false);
+              }}
+              style={[styles.modalButton, { backgroundColor: colors.primary }]}
+            >
+              Confirmar
+            </Button>
+
+            <Button
+              mode="outlined"
+              onPress={() => {
+                setRazonModalVisible(false);
+                setRazonCambio('');
+                setAccionPendiente(null);
+              }}
+              style={[styles.modalButton, { marginTop: 10 }]}
+            >
+              Cancelar
+            </Button>
+          </View>
+        </View>
+      </Modal>
+
 
       {/* MODAL */}
       <Modal visible={modalVisible} animationType="slide" transparent>
@@ -121,20 +231,79 @@ const ItemsScreen = () => {
             <Text style={[styles.modalTitle, { color: colors.modalText }]}>Detalles del Producto</Text>
             {selectedProduct && (
               <>
-                <Text style={[styles.modalText, { color: colors.modalText }]}><Text style={styles.bold}>Nombre:</Text> {selectedProduct.nombre_product}</Text>
-                <Text style={[styles.modalText, { color: colors.modalText }]}><Text style={styles.bold}>Precio:</Text> ${selectedProduct.precio_product}</Text>
-                <Text style={[styles.modalText, { color: colors.modalText }]}><Text style={styles.bold}>Stock:</Text> {selectedProduct.stock_product}</Text>
-                <Text style={[styles.modalText, { color: colors.modalText }]}><Text style={styles.bold}>Vendidos:</Text> {selectedProduct.vendidos_product}</Text>
+                <Text style={[styles.modalText, { color: colors.modalText }]}>
+                  <Text style={[styles.bold, { color: colors.modalText }]}>Nombre:</Text> {selectedProduct.nombre_product}
+                </Text>
+                <Text style={[styles.modalText, { color: colors.modalText }]}>
+                  <Text style={[styles.bold, { color: colors.modalText }]}>Precio:</Text> ${selectedProduct.precio_product}
+                </Text>
+                <Text style={[styles.modalText, { color: colors.modalText }]}>
+                  <Text style={[styles.bold, { color: colors.modalText }]}>Stock:</Text> {selectedProduct.stock_product}
+                </Text>
+                <Text style={[styles.modalText, { color: colors.modalText }]}>
+                  <Text style={[styles.bold, { color: colors.modalText }]}>Vendidos:</Text> {selectedProduct.vendidos_product}
+                </Text>
+
+                {/* Campo para modificar stock */}
+                <TextInput
+                  placeholder="Cantidad a ajustar"
+                  placeholderTextColor={isDark ? '#31D490' : '#1D3D47'}
+                  keyboardType="numeric"
+                  value={cantidadStock}
+                  onChangeText={setCantidadStock}
+                  style={{
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: 8,
+                    padding: 10,
+                    marginVertical: 10,
+                    color: '#000',
+                  }}
+                />
+
+                <View style={styles.buttonContainer}>
+                  <Button
+                    mode="contained"
+                    onPress={() =>
+                      actualizarStock(
+                        selectedProduct.id_product,
+                        parseInt(cantidadStock || '0', 10)
+                      )
+                    }
+                    style={[styles.modalButton, { backgroundColor: colors.primary }]}
+                  >
+                    Aumentar
+                  </Button>
+                  <Button
+                    mode="contained"
+                    onPress={() => {
+                      setAccionPendiente('disminuir');
+                      setRazonModalVisible(true);
+                    }}
+                    style={[styles.modalButton, { backgroundColor: colors.error }]}
+                  >
+                    Disminuir
+                  </Button>
+                </View>
+                <Button
+                  mode="contained"
+                  onPress={() => {
+                    setAccionPendiente('eliminar');
+                    setRazonModalVisible(true);
+                  }}
+                  style={[styles.modalButton, { backgroundColor: colors.error, marginTop: 10 }]}
+                >
+                  Eliminar
+                </Button>
+
+                <Button
+                  mode="outlined"
+                  onPress={() => setModalVisible(false)}
+                  style={[styles.modalButton, { marginTop: 10 }]}
+                >
+                  Cerrar
+                </Button>
               </>
             )}
-            <View style={styles.buttonContainer}>
-              <Button mode="contained" onPress={() => setModalVisible(false)} style={[styles.modalButton, { backgroundColor: colors.primary }]}>
-                Cerrar
-              </Button>
-              <Button mode="contained" onPress={() => setModalVisible(false)} style={[styles.modalButton, { backgroundColor: colors.error }]}>
-                Eliminar
-              </Button>
-            </View>
           </View>
         </View>
       </Modal>
@@ -170,9 +339,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 3,
   },
-  stockButton: {
-    marginLeft: 8,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -204,7 +370,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     gap: 10,
-    marginTop: 15,
+    marginTop: 10,
     justifyContent: 'space-between',
     width: '100%',
   },

@@ -74,7 +74,7 @@ export default function ResultadosScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {productos.map((producto) => (
           <View key={producto.id_product} style={[
-            styles.card,
+            styles.card,  
             { backgroundColor: theme === 'dark' ? '#2a2a2a' : '#f4f4f4' }
           ]}>
             <Text style={[

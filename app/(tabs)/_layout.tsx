@@ -47,17 +47,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="resultados"
-        options={{
-          title: 'Resultados',
-          tabBarIcon: ({ color }) => <IconSymbol size={30} name="chart.bar.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="explore"
         options={{
           title: 'Ventas',
           tabBarIcon: ({ color }) => <IconSymbol size={30} name="dollarsign.circle" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="resultados"
+        options={{
+          title: 'Resultados',
+          tabBarIcon: ({ color }) => <IconSymbol size={30} name="chart.bar.fill" color={color} />,
         }}
       />
     </Tabs>
